@@ -13,6 +13,8 @@ VALUES
 ('smartphone', 'Sony', 'Xperia 1 IV', 1200.00, 4, 12, 256, 6.5, 5000, 48, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Sony smartphone with 4K screen.'),
 ('smartphone', 'Huawei', 'P60 Pro', 850.00, 6, 8, 256, 6.6, 4800, 50, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Huawei flagship smartphone.'),
 ('smartphone', 'Motorola', 'Edge 40', 700.00, 10, 8, 256, 6.6, 4200, 50, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Motorola mid-range phone.'),
+('smartphone', 'Nothing', 'Phone (2)', 699.00, 15, 12, 256, 6.7, 4700, 50, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Smartphone with unique Glyph interface.'),
+('smartphone', 'Asus', 'Zenfone 10', 749.00, 8, 16, 512, 5.9, 4300, 50, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Compact flagship with high performance.'),
 
 -- Laptops (10)
 ('laptop', 'Dell', 'XPS 15', 2000.00, 5, 16, 512, NULL, NULL, NULL, 'Intel i7', 'NVIDIA RTX 4050', 15.6, 1.8, NULL, NULL, NULL, 'High-performance laptop.'),
@@ -25,6 +27,8 @@ VALUES
 ('laptop', 'Acer', 'Predator Helios 300', 1500.00, 6, 16, 512, NULL, NULL, NULL, 'Intel i7', 'NVIDIA RTX 3060', 15.6, 2.2, NULL, NULL, NULL, 'Mid-range gaming laptop.'),
 ('laptop', 'MSI', 'GF65 Thin', 1400.00, 5, 16, 512, NULL, NULL, NULL, 'Intel i7', 'NVIDIA RTX 3060', 15.6, 1.9, NULL, NULL, NULL, 'Lightweight gaming laptop.'),
 ('laptop', 'Razer', 'Blade 15', 2500.00, 2, 32, 1024, NULL, NULL, NULL, 'Intel i9', 'NVIDIA RTX 4070', 15.6, 2.0, NULL, NULL, NULL, 'Premium gaming laptop.'),
+('laptop', 'Microsoft', 'Surface Laptop 5', 1300.00, 7, 16, 512, NULL, NULL, NULL, 'Intel i5', 'Integrated', 13.5, 1.3, NULL, NULL, NULL, 'Sleek touchscreen laptop by Microsoft.'),
+('laptop', 'Gigabyte', 'Aero 16', 2200.00, 4, 32, 1024, NULL, NULL, NULL, 'Intel i7', 'NVIDIA RTX 4070', 16.0, 1.9, NULL, NULL, NULL, 'Creator laptop with 4K OLED display.'),
 
 -- Smartwatches (10)
 ('smartwatch', 'Apple', 'Watch Series 9', 399.00, 20, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OLED', 18, '50m', 'Latest Apple smartwatch.'),
@@ -36,4 +40,6 @@ VALUES
 ('smartwatch', 'Huawei', 'Watch GT 3', 229.00, 12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'AMOLED', 21, '50m', 'Huawei smartwatch.'),
 ('smartwatch', 'Amazfit', 'GTR 4', 179.00, 14, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'AMOLED', 18, '50m', 'Amazfit smartwatch.'),
 ('smartwatch', 'Garmin', 'Fenix 7', 599.00, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Transflective', 24, '100m', 'Premium Garmin watch.'),
-('smartwatch', 'Samsung', 'Galaxy Watch 5', 299.00, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'AMOLED', 16, '50m', 'Previous generation Samsung watch.');
+('smartwatch', 'Samsung', 'Galaxy Watch 5', 299.00, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'AMOLED', 16, '50m', 'Previous generation Samsung watch.'),
+('smartwatch', 'Google', 'Pixel Watch 2', 349.00, 12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'AMOLED', 24, '50m', 'Google smartwatch with Fitbit integration.'),
+('smartwatch', 'Mobvoi', 'TicWatch Pro 5', 349.00, 9, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Dual Layer OLED', 80, '50m', 'Wear OS watch with exceptional battery life.');
