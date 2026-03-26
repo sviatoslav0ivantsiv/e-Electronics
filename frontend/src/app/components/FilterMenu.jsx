@@ -1,5 +1,8 @@
 "use client";
 
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+
 const RANGE_FILTERS = {
   laptop: ["screen_size", "weight"],
   smartphone: ["display_size", "battery_capacity"],
@@ -53,7 +56,7 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
 
       <div>
         <div className="font-semibold mb-2">Price</div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-1">
           <input type="number" placeholder="Min" className="border rounded p-1 w-24 text-sm"
             value={activeFilters.min_price || ""}
             onChange={(e) => onFilterChange({ ...activeFilters, min_price: e.target.value })} />
@@ -61,6 +64,11 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
             value={activeFilters.max_price || ""}
             onChange={(e) => onFilterChange({ ...activeFilters, max_price: e.target.value })} />
         </div>
+        <Slider range
+          min={0} max={5000}
+          value={[activeFilters.min_price || 0, activeFilters.max_price || 5000]}
+          onChange={([min, max]) => onFilterChange({ ...activeFilters, min_price: min, max_price: max })}
+        />
       </div>
 
       <div>
@@ -91,17 +99,23 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
 
       {/* Range filters */}
       {rangeFields.map((field) => (
-        <div key={field}>
-          <div className="font-semibold mb-2">{RANGE_LABELS[field]}</div>
-          <div className="flex gap-2">
-            <input type="number" placeholder="Min" className="border rounded p-1 w-24 text-sm"
-              value={activeFilters[`min_${field}`] || ""}
-              onChange={(e) => handleRange(field, "min", e.target.value)} />
-            <input type="number" placeholder="Max" className="border rounded p-1 w-24 text-sm"
-              value={activeFilters[`max_${field}`] || ""}
-              onChange={(e) => handleRange(field, "max", e.target.value)} />
+          <div key={field}>
+            <div className="font-semibold mb-2">{RANGE_LABELS[field]}</div>
+            <div className="flex gap-2 mb-1">
+              <input type="number" placeholder="Min" className="border rounded p-1 w-24 text-sm"
+                value={activeFilters[`min_${field}`] || ""}
+                onChange={(e) => handleRange(field, "min", e.target.value)} />
+              <input type="number" placeholder="Max" className="border rounded p-1 w-24 text-sm"
+                value={activeFilters[`max_${field}`] || ""}
+                onChange={(e) => handleRange(field, "max", e.target.value)} />
+            </div>
+            <Slider range
+              min={0} max={5000}
+              value={[activeFilters.min_price || 0, activeFilters.max_price || 5000]}
+              onChange={([min, max]) => onFilterChange({ ...activeFilters, min_price: min, max_price: max })}
+            />
           </div>
-        </div>
+
       ))}
     </div>
   );

@@ -77,7 +77,7 @@ const title = categoryTitleMap[category] || "";
         }}
       />
     <div>
-      <div className="font-inter font-bold" style={{ fontSize: "24px", marginBottom: "16px" }}>
+      <div className="font-inter font-semibold" style={{ fontSize: "32px", marginBottom: "16px" }}>
         Filters
       </div>
       <FilterMenu
