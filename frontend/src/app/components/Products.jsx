@@ -2,17 +2,29 @@
 import { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import CategoriesMenu from "../components/CategoriesMenu";
+import FilterMenu from "../components/FilterMenu";
+
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [category, setCategory] = useState(""); // default = all
+  const [activeFilters, setActiveFilters] = useState({});
+  const [filterOptions, setFilterOptions] = useState({});
 
   // Fetch products
   useEffect(() => {
     let url = `http://127.0.0.1:8000/api/products?page=${currentPage}&limit=10`;
-    if (category) url += `&category=${category}`;
+        if (category) url += `&category=${category}`;
+
+    Object.entries(activeFilters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((v) => url += `&${key}=${encodeURIComponent(v)}`);
+      } else if (value !== "" && value !== null) {
+        url += `&${key}=${encodeURIComponent(value)}`;
+      }
+    });
 
     fetch(url)
       .then((res) => res.json())
@@ -20,7 +32,14 @@ export default function Products() {
         setProducts(data.products);
         setTotalPages(Math.ceil(data.total / 10));
       });
-  }, [currentPage, category]);
+  }, [currentPage, category, activeFilters]);
+
+  // Fetch filters
+  useEffect(() => {
+    let url = `http://127.0.0.1:8000/api/filters`;
+    if (category) url += `?category=${category}`;
+    fetch(url).then(r => r.json()).then(setFilterOptions);
+  }, [category]);
 
 // Map category DB value to display title
 const categoryTitleMap = {
@@ -47,14 +66,32 @@ const title = categoryTitleMap[category] || "";
 
   return (
     <div className="p-20 flex gap-8">
-      {/* Sidebar */}
+    {/* Sidebar */}
+    <div className="flex flex-col gap-6 w-[220px] shrink-0">
       <CategoriesMenu
         selectedCategory={category}
         onSelect={(cat) => {
-          setCategory(cat); // update category
-          setCurrentPage(1); // reset page
+          setCategory(cat);
+          setCurrentPage(1);
+          setActiveFilters({});
         }}
       />
+    <div>
+      <div className="font-inter font-bold" style={{ fontSize: "24px", marginBottom: "16px" }}>
+        Filters
+      </div>
+      <FilterMenu
+        category={category}
+        filterOptions={filterOptions}
+        activeFilters={activeFilters}
+        onFilterChange={(newFilters) => {
+          setActiveFilters(newFilters);
+          setCurrentPage(1);
+        }}
+      />
+    </div>
+  </div>
+
 
       {/* Products Section */}
       <div className="flex-1">
