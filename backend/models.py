@@ -174,23 +174,6 @@ class Product:
             "total": total
         }
 
-    # @staticmethod
-    # def get_filter_options(category=None):
-    #     conn = get_connection()
-    #     cursor = conn.cursor(dictionary=True)
-    #
-    #     where = "WHERE category = %s" if category else ""
-    #     params = [category] if category else []
-    #
-    #     result = {}
-    #     for col in ["brand", "ram", "storage", "cpu", "gpu", "screen_type", "water_resistance"]:
-    #         cursor.execute(f"SELECT DISTINCT {col} FROM products {where} ORDER BY {col}", params)
-    #         result[col] = [row[col] for row in cursor.fetchall() if row[col]]
-    #
-    #     cursor.close()
-    #     conn.close()
-    #     return result
-
     @staticmethod
     def get_filter_options(category=None):
         conn = get_connection()
@@ -199,10 +182,8 @@ class Product:
         where = "WHERE category = %s" if category else ""
         params = [category] if category else []
 
-        # always show these
         fields = ["brand", "ram", "storage"]
 
-        # category-specific
         if category == "laptop":
             fields += ["cpu", "gpu"]
         elif category == "smartphone":

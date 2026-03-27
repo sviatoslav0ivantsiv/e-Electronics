@@ -18,22 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.get("/api/products")
-# def get_products(category: str | None = Query(None), page: int = Query(1), limit: int = Query(10)):
-#     try:
-#         if category:
-#             return Product.by_category(category, page, limit)
-#         else:
-#             return Product.paginate(page, limit)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
-# def get_products(category=None, brand=None, min_price=None, max_price=None, model=None, ram=None, storage=None,
-#                      min_display_size=None, max_display_size=None, min_battery_capacity=None, max_battery_capacity=None,
-#                      cpu=None, gpu=None, min_screen_size=None, max_screen_size=None, min_weight=None, max_weight=None,
-#                      screen_type=None, min_battery_life=None, max_battery_life=None, water_resistance=None,
-#                      page=1, limit=10 ):
-
 @app.get("/api/products")
 def get_products(category: str | None = Query(None), brand: str | None = Query(None),
                 min_price: float | None = Query(None), max_price: float | None = Query(None),
