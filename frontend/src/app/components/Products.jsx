@@ -108,7 +108,7 @@ const title = categoryTitleMap[category] || "";
 
         {/* Products Grid */}
         <div className="grid gap-8 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
-          {products.map((product) => (
+          {products?.map((product) => (
             <div key={product.id} className="bg-white">
               <div className="w-full h-[180px] bg-gray-200 rounded-[8px]" />
               <div className="pt-4 pb-2">
