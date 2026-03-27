@@ -4,6 +4,8 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useState } from "react";
 
+
+
 const FIELD_LABELS = {
   brand: "Brand",
   camera_mp: "Camera (MP)",
@@ -26,9 +28,20 @@ const RANGE_LABELS = {
   display_size: "Display Size (inches)",
   battery_capacity: "Battery Capacity (mAh)",
   screen_size: "Screen Size (inches)",
-  weight: "Weight (g)",
+  weight: "Weight (kg)",
   battery_life: "Battery Life (hrs)",
 };
+
+function getMax(field) {
+  const maxMap = {
+    screen_size: 20,
+    display_size: 10,
+    weight: 5,
+    battery_life: 100,
+    battery_capacity: 10000,
+  };
+  return maxMap[field] || 100;
+}
 
 export default function FilterMenu({ category, filterOptions, activeFilters, onFilterChange }) {
   const rangeFields = RANGE_FILTERS[category] || [];
@@ -141,10 +154,14 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
                 value={activeFilters[`max_${field}`] || ""}
                 onChange={(e) => handleRange(field, "max", e.target.value)} />
             </div>
+
+
+
             <Slider range
-              min={0} max={5000}
-              value={[activeFilters.min_price || 0, activeFilters.max_price || 5000]}
-              onChange={([min, max]) => onFilterChange({ ...activeFilters, min_price: min, max_price: max })}
+              min={0}
+              max={getMax(field)}
+              value={[activeFilters[`min_${field}`] || 0, activeFilters[`max_${field}`] || getMax(field)]}
+              onChange={([min, max]) => onFilterChange({ ...activeFilters, [`min_${field}`]: min, [`max_${field}`]: max })}
               styles={{
                 track: { backgroundColor: "#E6E6E6", height: 8, borderRadius: 4, marginTop: 0  },
                 rail: { backgroundColor: "#E6E6E6", height: 8, borderRadius: 4, marginTop: 0 },
