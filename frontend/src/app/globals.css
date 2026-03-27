@@ -24,3 +24,27 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.rc-slider-rail,
+.rc-slider-track {
+  top: 55%;
+  transform: translateY(-50%);
+}
+
+input {
+  border-color: #E6E6E6;
+  outline: none;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E6E6E6;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #000;
+}

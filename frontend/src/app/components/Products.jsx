@@ -65,7 +65,7 @@ const title = categoryTitleMap[category] || "";
 )}
 
   return (
-    <div className="p-20 flex gap-8">
+    <div className="px-20 pt-10 pb-20 flex gap-8">
     {/* Sidebar */}
     <div className="flex flex-col gap-6 w-[220px] shrink-0">
       <CategoriesMenu
