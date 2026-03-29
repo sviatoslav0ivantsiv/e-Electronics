@@ -73,4 +73,72 @@ class Product:
         return {
             "products": products,
             "total": total
+
         }
+
+    @staticmethod
+    def update(product_id, data: dict):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        sql = """
+        UPDATE products
+        SET category=%s, brand=%s, model=%s, price=%s, stock=%s
+        WHERE id=%s
+        """
+
+        cursor.execute(sql, (
+            data["category"],
+            data["brand"],
+            data["model"],
+            data["price"],
+            data.get("stock", 0),
+            product_id
+        ))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return {"message": "Product updated"}
+
+    @staticmethod
+    def patch(product_id, data: dict):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        fields = []
+        values = []
+
+        for key, value in data.items():
+            fields.append(f"{key}=%s")
+            values.append(value)
+
+        values.append(product_id)
+
+        sql = f"""
+        UPDATE products
+        SET {', '.join(fields)}
+        WHERE id=%s
+        """
+
+        cursor.execute(sql, values)
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return {"message": "Product partially updated"}
+
+    @staticmethod
+    def delete(product_id):
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM products WHERE id=%s", (product_id,))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return {"message": "Product deleted"}
