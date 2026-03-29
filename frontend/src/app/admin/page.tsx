@@ -29,7 +29,7 @@ export default function AdminPage() {
       console.log("DATA:", data);
 
       // ✅ ГОЛОВНИЙ ФІКС
-      setProducts(Array.isArray(data) ? data : data.items || []);
+      setProducts(data.products || []);
     } catch (err) {
       console.error(err);
       setProducts([]); // щоб не падало
