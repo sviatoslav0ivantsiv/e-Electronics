@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, HTTPException, Query
 from models import Product
 from fastapi.middleware.cors import CORSMiddleware
-# from .db import get_connection
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -19,20 +19,32 @@ app.add_middleware(
 )
 
 @app.get("/api/products")
-def get_products(category: str | None = Query(None), brand: str | None = Query(None),
-                min_price: float | None = Query(None), max_price: float | None = Query(None),
-                model: str | None = Query(None),
-                min_display_size: float | None = Query(None), max_display_size: float | None = Query(None),
-                min_battery_capacity: int | None = Query(None), max_battery_capacity: int | None = Query(None),
-                camera: int | None = Query(None), cpu: str | None = Query(None), gpu: str | None = Query(None),
-                min_screen_size: float | None = Query(None), max_screen_size: float | None = Query(None),
-                min_weight: float | None = Query(None), max_weight: float | None = Query(None),
-                screen_type: str | None = Query(None),
-                min_battery_life: int | None = Query(None), max_battery_life: int | None = Query(None),
-                water_resistance: str | None = Query(None),
-                ram: int | None = Query(None), storage: int | None = Query(None),
-                page: int = Query(1), limit: int = Query(10)
-                ):
+def get_products(
+    category: str | None = Query(None),
+    brand: List[str] | None = Query(None),
+    model: List[str] | None = Query(None),
+    min_price: float | None = Query(None),
+    max_price: float | None = Query(None),
+    min_display_size: float | None = Query(None),
+    max_display_size: float | None = Query(None),
+    min_battery_capacity: int | None = Query(None),
+    max_battery_capacity: int | None = Query(None),
+    camera: List[int] | None = Query(None),
+    cpu: List[str] | None = Query(None),
+    gpu: List[str] | None = Query(None),
+    min_screen_size: float | None = Query(None),
+    max_screen_size: float | None = Query(None),
+    min_weight: float | None = Query(None),
+    max_weight: float | None = Query(None),
+    screen_type: List[str] | None = Query(None),
+    min_battery_life: int | None = Query(None),
+    max_battery_life: int | None = Query(None),
+    water_resistance: List[str] | None = Query(None),
+    ram: List[int] | None = Query(None),
+    storage: List[int] | None = Query(None),
+    page: int = Query(1),
+    limit: int = Query(10)
+    ):
 
     try:
         return Product.get_products(category, brand, min_price, max_price, model, min_display_size, max_display_size,
