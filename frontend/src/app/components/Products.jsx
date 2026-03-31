@@ -12,10 +12,11 @@ export default function Products() {
   const [category, setCategory] = useState(""); // default = all
   const [activeFilters, setActiveFilters] = useState({});
   const [filterOptions, setFilterOptions] = useState({});
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
   // Fetch products
   useEffect(() => {
-    let url = `http://127.0.0.1:8000/api/products?page=${currentPage}&limit=10`;
+    let url = `${BASE_URL}/products?page=${currentPage}&limit=10`;
         if (category) url += `&category=${category}`;
 
     Object.entries(activeFilters).forEach(([key, value]) => {
@@ -36,7 +37,7 @@ export default function Products() {
 
   // Fetch filters
   useEffect(() => {
-    let url = `http://127.0.0.1:8000/api/filters`;
+    let url = `${BASE_URL}filters`;
     if (category) url += `?category=${category}`;
     fetch(url).then(r => r.json()).then(setFilterOptions);
   }, [category]);
