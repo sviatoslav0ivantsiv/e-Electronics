@@ -202,7 +202,6 @@ class Product:
                 sql += " AND storage = %s"
                 params.append(storage)
 
-
         select_sql ="SELECT * FROM products WHERE 1=1" + sql + " LIMIT %s OFFSET %s"
         cursor.execute(select_sql, params + [limit, offset])
         products = cursor.fetchall()
@@ -244,8 +243,3 @@ class Product:
         cursor.close()
         conn.close()
         return result
-
-
-
-
-

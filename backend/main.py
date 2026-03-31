@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from models import Product
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List, Optional
+from typing import List
 
 app = FastAPI()
 
@@ -61,5 +61,3 @@ def get_filters(category: str | None = Query(None)):
         return Product.get_filter_options(category)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-

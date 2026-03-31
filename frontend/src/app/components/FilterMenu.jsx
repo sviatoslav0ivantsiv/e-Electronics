@@ -73,7 +73,7 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
 
 
       <div>
-        <div className="font-semibold mb-1">Price</div>
+        <div className="font-regular mb-1">Price</div>
         <div className="flex gap-2 mb-1">
           <input type="number" placeholder="Min" className="border rounded p-1 w-full text-sm"
             value={activeFilters.min_price || ""}
@@ -103,7 +103,7 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
       </div>
 
       <div>
-        <div className="font-semibold mb-1">Model</div>
+        <div className="font-regular mb-1">Model</div>
         <input type="text" placeholder="Search model..." className="border rounded p-1 w-full text-sm"
           value={activeFilters.model || ""}
           onChange={(e) => handleModel(e.target.value)} />
@@ -117,7 +117,7 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
               className="flex justify-between items-center cursor-pointer mb-1"
               onClick={() => toggleSection(field)}
             >
-            <div className="font-semibold capitalize">
+            <div className="font-regular capitalize">
               {FIELD_LABELS[field] || field.replace(/_/g, " ")}
             </div>
               <span style={{ color: "#E6E6E6" }}>
@@ -145,7 +145,7 @@ export default function FilterMenu({ category, filterOptions, activeFilters, onF
       {/* Range filters */}
       {rangeFields.map((field) => (
           <div key={field}>
-            <div className="font-semibold mb-1">{RANGE_LABELS[field]}</div>
+            <div className="font-regular mb-1">{RANGE_LABELS[field]}</div>
             <div className="flex gap-2 mb-1">
               <input type="number" placeholder="Min" className="border rounded p-1 w-full text-sm"
                 value={activeFilters[`min_${field}`] || ""}
