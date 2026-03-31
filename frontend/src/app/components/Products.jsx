@@ -37,7 +37,7 @@ export default function Products() {
 
   // Fetch filters
   useEffect(() => {
-    let url = `${BASE_URL}filters`;
+    let url = `${BASE_URL}/filters`;
     if (category) url += `?category=${category}`;
     fetch(url).then(r => r.json()).then(setFilterOptions);
   }, [category]);
