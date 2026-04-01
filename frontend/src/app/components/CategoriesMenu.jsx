@@ -11,7 +11,7 @@ export default function CategoriesMenu({ selectedCategory, onSelect }) {
   ];
 
   return (
-    <div className="w-[286px] flex flex-col gap-4">
+    <div className="w-[220px] flex flex-col gap-4">
       <h2 className="font-inter font-semibold text-[32px]">Categories</h2>
 
       <div className="flex flex-col gap-3">

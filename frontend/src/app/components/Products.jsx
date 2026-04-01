@@ -2,17 +2,30 @@
 import { useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
 import CategoriesMenu from "../components/CategoriesMenu";
+import FilterMenu from "../components/FilterMenu";
+
 
 export default function Products() {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [category, setCategory] = useState(""); // default = all
+  const [activeFilters, setActiveFilters] = useState({});
+  const [filterOptions, setFilterOptions] = useState({});
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
   // Fetch products
   useEffect(() => {
-    let url = `http://127.0.0.1:8000/api/products?page=${currentPage}&limit=10`;
-    if (category) url += `&category=${category}`;
+    let url = `${BASE_URL}/products?page=${currentPage}&limit=10`;
+        if (category) url += `&category=${category}`;
+
+    Object.entries(activeFilters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach((v) => url += `&${key}=${encodeURIComponent(v)}`);
+      } else if (value !== "" && value !== null) {
+        url += `&${key}=${encodeURIComponent(value)}`;
+      }
+    });
 
     fetch(url)
       .then((res) => res.json())
@@ -20,7 +33,14 @@ export default function Products() {
         setProducts(data.products);
         setTotalPages(Math.ceil(data.total / 10));
       });
-  }, [currentPage, category]);
+  }, [currentPage, category, activeFilters]);
+
+  // Fetch filters
+  useEffect(() => {
+    let url = `${BASE_URL}/filters`;
+    if (category) url += `?category=${category}`;
+    fetch(url).then(r => r.json()).then(setFilterOptions);
+  }, [category]);
 
 // Map category DB value to display title
 const categoryTitleMap = {
@@ -46,15 +66,33 @@ const title = categoryTitleMap[category] || "";
 )}
 
   return (
-    <div className="p-20 flex gap-8">
-      {/* Sidebar */}
+    <div className="px-20 pt-10 pb-20 flex gap-8">
+    {/* Sidebar */}
+    <div className="flex flex-col gap-6 w-[220px] shrink-0">
       <CategoriesMenu
         selectedCategory={category}
         onSelect={(cat) => {
-          setCategory(cat); // update category
-          setCurrentPage(1); // reset page
+          setCategory(cat);
+          setCurrentPage(1);
+          setActiveFilters({});
         }}
       />
+    <div>
+      <div className="font-inter font-semibold" style={{ fontSize: "32px", marginBottom: "16px" }}>
+        Filters
+      </div>
+      <FilterMenu
+        category={category}
+        filterOptions={filterOptions}
+        activeFilters={activeFilters}
+        onFilterChange={(newFilters) => {
+          setActiveFilters(newFilters);
+          setCurrentPage(1);
+        }}
+      />
+    </div>
+  </div>
+
 
       {/* Products Section */}
       <div className="flex-1">
@@ -71,7 +109,7 @@ const title = categoryTitleMap[category] || "";
 
         {/* Products Grid */}
         <div className="grid gap-8 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
-          {products.map((product) => (
+          {products?.map((product) => (
             <div key={product.id} className="bg-white">
               <div className="w-full h-[180px] bg-gray-200 rounded-[8px]" />
               <div className="pt-4 pb-2">
