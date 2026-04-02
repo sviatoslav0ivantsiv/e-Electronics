@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException, Query
-from models import Product
+from models import Product, User, UserRegister, UserLogin
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+
 
 app = FastAPI()
 
@@ -59,5 +60,19 @@ def get_products(
 def get_filters(category: str | None = Query(None)):
     try:
         return Product.get_filter_options(category)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/auth/register")
+def register_user(user: UserRegister):
+    try:
+        return User.register(user)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/auth/login")
+def login_user(user: UserLogin):
+    try:
+        return User.login(user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,4 +1,12 @@
 from db import get_connection
+from pydantic import BaseModel
+from passlib.context import CryptContext
+from jose import jwt
+from datetime import datetime, timedelta
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+SECRET_KEY = "your-secret-key"
+
 
 class Product:
     def __init__(self, category, brand, model, price, stock=0, **kwargs):
@@ -243,3 +251,84 @@ class Product:
         cursor.close()
         conn.close()
         return result
+
+
+
+    # ============ users ==============
+
+
+
+def create_token(user):
+    return jwt.encode({"id": user["id"],  "is_admin": user["is_admin"]}, SECRET_KEY, algorithm="HS256")
+
+class UserRegister(BaseModel):
+    name: str
+    password: str
+
+class UserLogin(BaseModel):
+    name: str
+    password: str
+
+class User:
+    @staticmethod
+    def register(user: UserRegister):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM users WHERE name = %s", (user.name,))
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return {"message": "User already exists"}
+
+        hashed = pwd_context.hash(user.password)
+
+        cursor.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (user.name, hashed))
+        conn.commit()
+
+        new_id = cursor.lastrowid
+        cursor.execute("SELECT id, name, is_admin, created_at FROM users WHERE id = %s", (new_id,))
+        new_user = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+        return {
+            "message": "User registered successfully",
+            "user": new_user
+        }
+
+    @staticmethod
+    def login(name: str, password: str):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
+        user = cursor.fetchone()
+
+        if not user or not pwd_context.verify(password, user["password"]):
+            cursor.close()
+            conn.close()
+            return {"message": "Invalid credentials"}
+
+        cursor.close()
+        conn.close()
+
+        token = create_token(user)
+        user["token"] = token
+
+        return {
+            "message": "Login successful",
+            "token": token
+        }
+
+
+
+
+
+
+
+
+
+
+
+
