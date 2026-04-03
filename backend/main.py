@@ -73,6 +73,6 @@ def register_user(user: UserRegister):
 @app.post("/auth/login")
 def login_user(user: UserLogin):
     try:
-        return User.login(user)
+        return User.login(user.name, user.password)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

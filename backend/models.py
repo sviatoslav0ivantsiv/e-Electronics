@@ -2,7 +2,6 @@ from db import get_connection
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from jose import jwt
-from datetime import datetime, timedelta
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "your-secret-key"
@@ -320,15 +319,4 @@ class User:
             "message": "Login successful",
             "token": token
         }
-
-
-
-
-
-
-
-
-
-
-
 
