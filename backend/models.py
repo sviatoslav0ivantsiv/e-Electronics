@@ -2,10 +2,16 @@ from db import get_connection
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from jose import jwt
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
+
+load_dotenv(Path(__file__).resolve().parent / ".env")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = "your-secret-key"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
+# ======================== products ==========================
 
 class Product:
     def __init__(self, category, brand, model, price, stock=0, **kwargs):
@@ -253,12 +259,12 @@ class Product:
 
 
 
-    # ============ users ==============
+# ======================== users ==========================
 
 
 
 def create_token(user):
-    return jwt.encode({"id": user["id"],  "is_admin": user["is_admin"]}, SECRET_KEY, algorithm="HS256")
+    return jwt.encode({"id": user["id"], "name": user["name"], "is_admin": user["is_admin"]}, SECRET_KEY, algorithm="HS256")
 
 class UserRegister(BaseModel):
     name: str
