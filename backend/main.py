@@ -39,7 +39,7 @@ def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security))
 def get_products(
     category: str | None = Query(None),
     brand: List[str] | None = Query(None),
-    model: List[str] | None = Query(None),
+    model: str | None = Query(None),
     min_price: float | None = Query(None),
     max_price: float | None = Query(None),
     min_display_size: float | None = Query(None),
