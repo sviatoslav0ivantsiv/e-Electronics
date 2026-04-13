@@ -131,7 +131,7 @@ def login_user(user: UserLogin):
         return User.login(user.name, user.password)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
 @app.get("/api/admin/users")
 def get_users(admin=Depends(require_admin)):
     try:
@@ -139,7 +139,7 @@ def get_users(admin=Depends(require_admin)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.patch("api/admin/users/{id}/toggle-admin")
+@app.patch("/api/admin/users/{user_id}/toggle-admin")
 def toggle_admin(user_id: int, admin=Depends(require_admin)):
     try:
         return User.toggle_admin(user_id)
