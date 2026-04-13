@@ -381,5 +381,3 @@ class User:
         cursor.close()
         conn.close()
         return {"message": "Admin status updated"}
-
-    
