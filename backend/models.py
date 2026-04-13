@@ -21,71 +21,6 @@ class Product:
         self.price = price
         self.stock = stock
         self.specs = kwargs  # other fields like cpu, ram, etc. will be stored here
-    @staticmethod
-    def all():
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM products")
-        rows = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return rows
-
-    def save(self):
-        conn = get_connection()
-        cursor = conn.cursor()
-        sql = """
-        INSERT INTO products (category, brand, model, price, stock)
-        VALUES (%s, %s, %s, %s, %s)
-        """
-        cursor.execute(sql, (self.category, self.brand, self.model, self.price, self.stock))
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-    @staticmethod
-    def paginate(page=1, limit=10):
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        limit = min(limit, 100)
-        offset = (page - 1) * limit
-
-        cursor.execute("SELECT * FROM products ORDER BY id LIMIT %s OFFSET %s", (limit, offset))
-        products = cursor.fetchall()
-
-        cursor.execute("SELECT COUNT(*) as total FROM products")
-        total = cursor.fetchone()["total"]
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "products": products,
-            "total": total
-        }
-
-    @staticmethod
-    def by_category(category, page=1, limit=10):
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        limit = min(limit, 100)
-        offset = (page - 1) * limit
-
-        cursor.execute("SELECT * FROM products WHERE category = %s ORDER BY id LIMIT %s OFFSET %s", (category, limit, offset))
-        products = cursor.fetchall()
-
-        cursor.execute("SELECT COUNT(*) as total FROM products WHERE category = %s", (category,))
-        total = cursor.fetchone()["total"]
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "products": products,
-            "total": total
-        }
 
     @staticmethod
     def get_products(category = None, brand = None, min_price = None, max_price = None, model = None,
@@ -240,32 +175,34 @@ class Product:
             "total": total
         }
 
-
     @staticmethod
-    def get_filter_options(category=None):
+    def all():
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-
-        where = "WHERE category = %s" if category else ""
-        params = [category] if category else []
-
-        fields = ["brand", "ram", "storage"]
-
-        if category == "laptop":
-            fields += ["cpu", "gpu"]
-        elif category == "smartphone":
-            fields += ["camera_mp"]
-        elif category == "smartwatch":
-            fields += ["screen_type", "water_resistance"]
-
-        result = {}
-        for col in fields:
-            cursor.execute(f"SELECT DISTINCT {col} FROM products {where} ORDER BY {col}", params)
-            result[col] = [row[col] for row in cursor.fetchall() if row[col] is not None]
-
+        cursor.execute("SELECT * FROM products")
+        rows = cursor.fetchall()
         cursor.close()
         conn.close()
-        return result
+        return rows
+
+    @staticmethod
+    def save(data: dict):
+        conn = get_connection()
+        cursor = conn.cursor()
+        sql = """
+        INSERT INTO products (category, brand, model, price, stock)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(sql, (
+            data["category"],
+            data["brand"],
+            data["model"],
+            data["price"],
+            data.get("stock", 0)
+        ))
+        conn.commit()
+        cursor.close()
+        conn.close()
 
     @staticmethod
     def update(product_id, data: dict):
@@ -337,6 +274,36 @@ class Product:
         return {"message": "Product deleted"}
 
 
+    # ==========filter options================
+    
+    @staticmethod
+    def get_filter_options(category=None):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        where = "WHERE category = %s" if category else ""
+        params = [category] if category else []
+
+        fields = ["brand", "ram", "storage"]
+
+        if category == "laptop":
+            fields += ["cpu", "gpu"]
+        elif category == "smartphone":
+            fields += ["camera_mp"]
+        elif category == "smartwatch":
+            fields += ["screen_type", "water_resistance"]
+
+        result = {}
+        for col in fields:
+            cursor.execute(f"SELECT DISTINCT {col} FROM products {where} ORDER BY {col}", params)
+            result[col] = [row[col] for row in cursor.fetchall() if row[col] is not None]
+
+        cursor.close()
+        conn.close()
+        return result
+
+    
+
 
 # ======================== users ==========================
 
@@ -401,5 +368,25 @@ class User:
             "message": "Login successful",
             "token": token
         }
+    
+    @staticmethod
+    def get_all():
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, is_admin, created_at FROM users")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return users
+
+    @staticmethod
+    def toggle_admin(user_id: int):
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET is_admin = NOT is_admin WHERE id = %s", (user_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"message": "Admin status updated"}
 
     
