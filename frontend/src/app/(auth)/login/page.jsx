@@ -34,7 +34,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col gap-4 w-full max-w-sm p-8 bg-white rounded-2xl">
         <h1
           style={{ fontFamily: "var(--font-inter)", fontWeight: 700, fontSize: "24px" }}
