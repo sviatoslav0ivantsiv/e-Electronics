@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException, Query
-from models import Product
+from models import Product, User, UserRegister, UserLogin
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+
 
 app = FastAPI()
 
@@ -42,6 +43,7 @@ def get_products(
     water_resistance: List[str] | None = Query(None),
     ram: List[int] | None = Query(None),
     storage: List[int] | None = Query(None),
+    sort: str = Query("desc"),
     page: int = Query(1),
     limit: int = Query(10)
     ):
@@ -51,6 +53,7 @@ def get_products(
                                     min_battery_capacity, max_battery_capacity, camera, cpu, gpu, min_screen_size, max_screen_size,
                                     min_weight, max_weight, screen_type, min_battery_life, max_battery_life, water_resistance,
                                     ram, storage,
+                                    sort,
                                     page, limit)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -59,5 +62,19 @@ def get_products(
 def get_filters(category: str | None = Query(None)):
     try:
         return Product.get_filter_options(category)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/auth/register")
+def register_user(user: UserRegister):
+    try:
+        return User.register(user)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/auth/login")
+def login_user(user: UserLogin):
+    try:
+        return User.login(user.name, user.password)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
