@@ -60,12 +60,17 @@ class Product:
             params.append(max_price)
         if model:
             if isinstance(model, list):
-                placeholders = ', '.join(['%s'] * len(model))
-                sql += f" AND model IN ({placeholders})"
-                params.extend(model)
+                model = [m for m in model if m.strip()]
+                if model:
+                    conditions = []
+                    for m in model:
+                        conditions.append("model LIKE %s")
+                        params.append(f"%{m}%")
+                    sql += f" AND (" + " OR ".join(conditions) + ")"
             else:
-                sql += " AND model = %s"
-                params.append(model)
+                if model.strip():
+                    sql += " AND model LIKE %s"
+                    params.append(f"%{model}%")
         if min_display_size:
             sql += " AND display_size >= %s"
             params.append(min_display_size)
@@ -157,9 +162,9 @@ class Product:
         else:
             direction = "DESC"
 
-        sql += f" ORDER BY price {direction}"
+        # sql += f" ORDER BY price {direction}"
 
-        select_sql ="SELECT * FROM products WHERE 1=1" + sql + " LIMIT %s OFFSET %s"
+        select_sql ="SELECT * FROM products WHERE 1=1" + sql + f" ORDER BY price {direction}" + " LIMIT %s OFFSET %s"
         cursor.execute(select_sql, params + [limit, offset])
         products = cursor.fetchall()
 
