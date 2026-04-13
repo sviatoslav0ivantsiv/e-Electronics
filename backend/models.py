@@ -267,72 +267,6 @@ class Product:
         conn.close()
         return result
 
-
-
-# ======================== users ==========================
-
-
-
-def create_token(user):
-    return jwt.encode({"id": user["id"], "name": user["name"], "is_admin": user["is_admin"]}, SECRET_KEY, algorithm="HS256")
-
-class UserRegister(BaseModel):
-    name: str
-    password: str
-
-class UserLogin(BaseModel):
-    name: str
-    password: str
-
-class User:
-    @staticmethod
-    def register(user: UserRegister):
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT * FROM users WHERE name = %s", (user.name,))
-        if cursor.fetchone():
-            cursor.close()
-            conn.close()
-            return {"message": "User already exists"}
-
-        hashed = pwd_context.hash(user.password)
-
-        cursor.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (user.name, hashed))
-        conn.commit()
-
-        new_id = cursor.lastrowid
-        cursor.execute("SELECT id, name, is_admin, created_at FROM users WHERE id = %s", (new_id,))
-        new_user = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-        return {
-            "message": "User registered successfully",
-            "user": new_user
-        }
-
-    @staticmethod
-    def login(name: str, password: str):
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
-        user = cursor.fetchone()
-
-        if not user or not pwd_context.verify(password, user["password"]):
-            cursor.close()
-            conn.close()
-            return {"message": "Invalid credentials"}
-        
-        token = create_token(user)
-        user["token"] = token
-
-        return {
-            "message": "Login successful",
-            "token": token
-        }
-
     @staticmethod
     def update(product_id, data: dict):
         conn = get_connection()
@@ -401,3 +335,71 @@ class User:
         
 
         return {"message": "Product deleted"}
+
+
+
+# ======================== users ==========================
+
+
+
+def create_token(user):
+    return jwt.encode({"id": user["id"], "name": user["name"], "is_admin": user["is_admin"]}, SECRET_KEY, algorithm="HS256")
+
+class UserRegister(BaseModel):
+    name: str
+    password: str
+
+class UserLogin(BaseModel):
+    name: str
+    password: str
+
+class User:
+    @staticmethod
+    def register(user: UserRegister):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM users WHERE name = %s", (user.name,))
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return {"message": "User already exists"}
+
+        hashed = pwd_context.hash(user.password)
+
+        cursor.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (user.name, hashed))
+        conn.commit()
+
+        new_id = cursor.lastrowid
+        cursor.execute("SELECT id, name, is_admin, created_at FROM users WHERE id = %s", (new_id,))
+        new_user = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+        return {
+            "message": "User registered successfully",
+            "user": new_user
+        }
+
+    @staticmethod
+    def login(name: str, password: str):
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
+        user = cursor.fetchone()
+
+        if not user or not pwd_context.verify(password, user["password"]):
+            cursor.close()
+            conn.close()
+            return {"message": "Invalid credentials"}
+        
+        token = create_token(user)
+        user["token"] = token
+
+        return {
+            "message": "Login successful",
+            "token": token
+        }
+
+    
