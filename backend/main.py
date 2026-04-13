@@ -1,8 +1,10 @@
 from models import Product, User, UserRegister, UserLogin
 from typing import List
-from fastapi import FastAPI, HTTPException, Query, Body
+from fastapi import FastAPI, HTTPException, Query, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import jwt, JWTError
+import os
 
 app = FastAPI()
 
@@ -20,7 +22,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+security = HTTPBearer()
+
 # ------------------- ROUTES -------------------
+
+def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        payload = jwt.decode(credentials.credentials, os.getenv("SECRET_KEY"), algorithms=["HS256"])
+        if not payload.get("is_admin"):
+            raise HTTPException(status_code=403, detail="Admins only")
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.get("/api/products")
 def get_products(
@@ -60,6 +73,41 @@ def get_products(
                                     page, limit)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/api/products")
+def create_product(data: dict = Body(...), admin=Depends(require_admin)):
+    try:
+        Product.save(data)
+        return {"message": "Product created"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.put("/api/products/{product_id}")
+def update_product(product_id: int, data: dict = Body(...), admin=Depends(require_admin)):
+    try:
+        return Product.update(product_id, data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.patch("/api/products/{product_id}")
+def patch_product(product_id: int, data: dict = Body(...), admin=Depends(require_admin)):
+    try:
+        return Product.patch(product_id, data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.delete("/api/products/{product_id}")
+def delete_product(product_id: int, admin=Depends(require_admin)):
+    try:
+        return Product.delete(product_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+    # ===filters===
 
 @app.get("/api/filters")
 def get_filters(category: str | None = Query(None)):
@@ -67,6 +115,8 @@ def get_filters(category: str | None = Query(None)):
         return Product.get_filter_options(category)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+    # ===user===
 
 @app.post("/auth/register")
 def register_user(user: UserRegister):
@@ -81,42 +131,17 @@ def login_user(user: UserLogin):
         return User.login(user.name, user.password)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        if category:
-            return Product.by_category(category, page, limit)
-        return Product.paginate(page, limit)
+    
+@app.get("/api/admin/users")
+def get_users(admin=Depends(require_admin)):
+    try:
+        return User.get_all()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/api/admin/products")
-def create_product(data: dict = Body(...)):
+    
+@app.patch("api/admin/users/{id}/toggle-admin")
+def toggle_admin(user_id: int, admin=Depends(require_admin)):
     try:
-        product = Product(**data)
-        product.save()
-        return {"message": "Product created"}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.put("/api/admin/products/{product_id}")
-def update_product(product_id: int, data: dict = Body(...)):
-    try:
-        return Product.update(product_id, data)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.patch("/api/admin/products/{product_id}")
-def patch_product(product_id: int, data: dict = Body(...)):
-    try:
-        return Product.patch(product_id, data)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.delete("/api/admin/products/{product_id}")
-def delete_product(product_id: int):
-    try:
-        return Product.delete(product_id)
+        return User.toggle_admin(user_id)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
