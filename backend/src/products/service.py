@@ -7,7 +7,6 @@ def get_products(filters: dict):
     sql = ""
     params = []
     
-    # Mapping fields from filter dict to SQL
     if filters.get("category"):
         sql += " AND category = %s"
         params.append(filters["category"])
@@ -164,6 +163,12 @@ def get_filter_options(category=None):
     where = "WHERE category = %s" if category else ""
     params = [category] if category else []
     fields = ["brand", "ram", "storage"]
+    if category == "laptop":
+        fields += ["cpu", "gpu"]
+    elif category == "smartphone":
+        fields += ["camera_mp"]
+    elif category == "smartwatch":
+        fields += ["screen_type", "water_resistance"]
     result = {}
     for col in fields:
         cursor.execute(f"SELECT DISTINCT {col} FROM products {where} ORDER BY {col}", params)
