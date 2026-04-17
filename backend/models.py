@@ -10,6 +10,7 @@ from pathlib import Path
 load_dotenv(Path(__file__).resolve().parent / ".env")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORYTHM = os.getenv("ALGORYTHM")
 
 # ======================== products ==========================
 
@@ -303,7 +304,7 @@ class Product:
 
 
 def create_token(user):
-    return jwt.encode({"id": user["id"], "name": user["name"], "is_admin": user["is_admin"]}, SECRET_KEY, algorithm="HS256")
+    return jwt.encode({"id": user["id"], "name": user["name"], "is_admin": user["is_admin"]}, SECRET_KEY, algorithm=ALGORYTHM)
 
 class UserRegister(BaseModel):
     name: str

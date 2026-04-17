@@ -103,7 +103,7 @@ function ProductForm({ form, setForm, onSubmit, loading, title, onCancel }) {
 
       <div style={{ marginBottom: 12 }}>
         <label style={s.label}>Description</label>
-        <textarea style={s.textarea} placeholder="Description..." value={form.description}
+        <textarea style={s.textarea} placeholder="Description..." value={form.description || ""}
           onChange={e => handleChange("description", e.target.value)} />
       </div>
 
