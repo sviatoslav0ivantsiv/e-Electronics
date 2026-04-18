@@ -1,15 +1,15 @@
 from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from . import service
 from src.auth.controller import require_admin
-from .model import ProductCreate
+from .model import ProductCreate, ProductFilterParams
 
-router = APIRouter(prefix="/api/products", tags=["Products"])
+router = APIRouter(prefix="/api", tags=["Products"])
 
-@router.get("")
-def list_products(request: Request):
-    return service.get_products(dict(request.query_params))
+@router.get("/products")
+def list_products(params: ProductFilterParams = Depends()):
+    return service.get_products(params.model_dump(exclude_none=True))
 
-@router.post("")
+@router.post("/products")
 def create_product(product: ProductCreate, admin=Depends(require_admin)):
     try:
         service.save(product.model_dump())
@@ -17,7 +17,7 @@ def create_product(product: ProductCreate, admin=Depends(require_admin)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.delete("/{product_id}")
+@router.delete("/products/{product_id}")
 def delete_product(product_id: int, admin=Depends(require_admin)):
     try:
         return service.delete(product_id)

@@ -114,7 +114,6 @@ def get_products(filters: dict):
             sql += " AND storage = %s"
             params.append(filters["storage"])
     
-    # Convert strings from query params to integers for math operations
     limit = int(filters.get("limit", 10))
     limit = min(limit, 100)
     page = int(filters.get("page", 1))
@@ -151,8 +150,10 @@ def save(data: dict):
 def delete(product_id: int):
     conn = get_connection()
     cursor = conn.cursor()
+
     cursor.execute("DELETE FROM products WHERE id=%s", (product_id,))
     conn.commit()
+
     cursor.close()
     conn.close()
     return {"message": "Product deleted"}
@@ -160,19 +161,24 @@ def delete(product_id: int):
 def get_filter_options(category=None):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
+
     where = "WHERE category = %s" if category else ""
     params = [category] if category else []
     fields = ["brand", "ram", "storage"]
+
     if category == "laptop":
         fields += ["cpu", "gpu"]
     elif category == "smartphone":
         fields += ["camera_mp"]
     elif category == "smartwatch":
         fields += ["screen_type", "water_resistance"]
+
     result = {}
+
     for col in fields:
         cursor.execute(f"SELECT DISTINCT {col} FROM products {where} ORDER BY {col}", params)
         result[col] = [row[col] for row in cursor.fetchall() if row[col] is not None]
+
     cursor.close()
     conn.close()
     return result
