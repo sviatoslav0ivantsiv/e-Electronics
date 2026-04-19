@@ -57,6 +57,8 @@ const FIELD_META = {
   storage:           { label: "Storage (GB)", type: "number" },
 };
 
+
+
 function ProductForm({ form, setForm, onSubmit, loading, title, onCancel }) {
   const extraFields = CATEGORY_FIELDS[form.category] || [];
 
@@ -141,6 +143,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
   const [user, setUser] = useState(null);
 
@@ -164,11 +167,16 @@ export default function AdminPage() {
     }
   }, []);
 
-  const getToken = () => localStorage.getItem("token");
+  const getToken = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("token");
+  };
   const authHeaders = () => ({
     "Content-Type": "application/json",
     "Authorization": `Bearer ${getToken()}`
   });
+
+  console.log("headers", authHeaders());  
 
   const fetchProducts = async () => {
     try {
@@ -239,11 +247,17 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm("Delete product?")) return;
+    if (deleteId !== id) {
+      setDeleteId(id);
+      return;
+    }
     try {
-      await fetch(`${BASE_URL}/products/${id}`, {
-        method: "DELETE", headers: authHeaders(),
+      const res = await fetch(`${BASE_URL}/products/${id}`, {
+        method: "DELETE",
+        headers: authHeaders(),
       });
+      console.log("delete status", res.status);
+      setDeleteId(null);
       fetchProducts();
     } catch (err) { console.error(err); }
   };
@@ -294,8 +308,14 @@ export default function AdminPage() {
                     <td style={s.td}>{p.stock}</td>
                     <td style={s.td}>
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button style={s.btn} onClick={() => setEditProduct({ ...EMPTY_FORM, ...p })}>Edit</button>
-                        <button style={s.btnDanger} onClick={() => handleDelete(p.id)}>Delete</button>
+                        <button style={s.btn} onClick={() => setEditProduct({ ...EMPTY_FORM,
+                          ...Object.fromEntries(Object.entries(p).filter(([_, v]) => v !== null)) })}>Edit</button>
+                        <button 
+                          style={deleteId === p.id ? s.btnDanger : s.btn} 
+                          onClick={() => handleDelete(p.id)}
+                        >
+                          {deleteId === p.id ? " Del? " : "Delete"}
+                        </button>
                       </div>
                     </td>
                   </tr>
