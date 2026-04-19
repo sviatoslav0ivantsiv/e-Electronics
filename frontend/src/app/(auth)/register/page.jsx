@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function RegisterPage() {
 
   async function handleRegister() {
     setError("");
-    const res = await fetch(`${BASE_URL.replace('/api', '')}/auth/register`, {
+    const res = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, password }),

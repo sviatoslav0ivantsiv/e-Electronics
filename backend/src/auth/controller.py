@@ -3,9 +3,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 import os
 from . import service
-from src.users.model import UserLogin
+from src.users.model import UserCredentials
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 security = HTTPBearer()
 
 def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
@@ -20,7 +20,7 @@ def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security))
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.post("/login")
-def login(user: UserLogin):
+def login(user: UserCredentials):
     try:
         token = service.login(user.name, user.password)
         if not token:

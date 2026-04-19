@@ -1,11 +1,11 @@
 from passlib.context import CryptContext
-from src.users.model import UserRegister
+from src.users.model import UserCredentials
 from src.database.core import get_connection
 import logging
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def register(user: UserRegister):
+def register(user: UserCredentials):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 

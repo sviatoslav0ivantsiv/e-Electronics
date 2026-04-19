@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
 const s = {
   wrap: { padding: "2rem", maxWidth: 1100, margin: "0 auto", fontFamily: "sans-serif" },
