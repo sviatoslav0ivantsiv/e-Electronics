@@ -2,10 +2,12 @@ from fastapi import APIRouter, HTTPException, Depends
 from . import service
 from src.users.model import UserCredentials
 from src.auth.controller import require_admin
+from src.rate_limiting import limiter
 
 router = APIRouter(prefix="/api", tags=["Users"])
 
 @router.post("/auth/register")
+@limiter.limit("5/minute")
 def register_user(user: UserCredentials):
     try:
         return service.register(user.name, user.password)
@@ -13,6 +15,7 @@ def register_user(user: UserCredentials):
         raise HTTPException(status_code=409, detail=str(e))
 
 @router.get("/admin/users")
+@limiter.limit("5/minute")
 def get_users(admin=Depends(require_admin)):
     try:
         return service.get_all()
@@ -20,6 +23,7 @@ def get_users(admin=Depends(require_admin)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.patch("/admin/users/{user_id}/toggle-admin")
+@limiter.limit("5/minute")
 def toggle_admin(user_id: int, admin=Depends(require_admin)):
     try:
         return service.toggle_admin(user_id)

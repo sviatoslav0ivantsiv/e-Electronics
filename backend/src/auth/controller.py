@@ -4,6 +4,8 @@ from jose import jwt, JWTError
 import os
 from . import service
 from src.users.model import UserCredentials
+from src.rate_limiting import limiter
+
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 security = HTTPBearer()
@@ -20,6 +22,7 @@ def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security))
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.post("/login")
+@limiter.limit("5/minute")
 def login(user: UserCredentials):
     try:
         token = service.login(user.name, user.password)
