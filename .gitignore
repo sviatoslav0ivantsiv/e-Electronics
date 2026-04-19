@@ -69,6 +69,7 @@ __pycache__/
 *.so
 __pycache__/
 *.pyc
+backend/*.pyс
 
 # Virtual env
 env/
