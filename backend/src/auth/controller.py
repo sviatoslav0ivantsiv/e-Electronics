@@ -5,6 +5,7 @@ import os
 from . import service
 from src.users.model import UserCredentials
 from src.rate_limiting import limiter
+from fastapi import Request
 
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
@@ -23,7 +24,7 @@ def require_admin(credentials: HTTPAuthorizationCredentials = Depends(security))
 
 @router.post("/login")
 @limiter.limit("5/minute")
-def login(user: UserCredentials):
+def login(request: Request, user: UserCredentials):
     try:
         token = service.login(user.name, user.password)
         if not token:
