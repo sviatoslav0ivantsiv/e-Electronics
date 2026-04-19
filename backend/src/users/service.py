@@ -1,24 +1,21 @@
 from passlib.context import CryptContext
-from src.users.model import UserCredentials
 from src.database.core import get_connection
-import logging
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def register(user: UserCredentials):
+def register(name: str, password: str):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE name = %s", (user.name,))
+    cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
     if cursor.fetchone():
         cursor.close()
         conn.close()
-        logging.error(f"User {user.name} already exists")
-        return  {"message": "User already exists"}
+        raise ValueError("User already exists")
 
-    hashed = pwd_context.hash(user.password)
+    hashed = pwd_context.hash(password)
 
-    cursor.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (user.name, hashed))
+    cursor.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (name, hashed))
     conn.commit()
 
     new_id = cursor.lastrowid

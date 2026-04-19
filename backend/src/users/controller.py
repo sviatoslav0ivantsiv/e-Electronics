@@ -8,9 +8,9 @@ router = APIRouter(prefix="/api", tags=["Users"])
 @router.post("/auth/register")
 def register_user(user: UserCredentials):
     try:
-        return service.register(user)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return service.register(user.name, user.password)
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 @router.get("/admin/users")
 def get_users(admin=Depends(require_admin)):
