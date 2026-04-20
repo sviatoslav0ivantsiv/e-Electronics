@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from jose import JWTError
 from src.auth.controller import router, require_admin
 
-# Create a dummy app to test the router and dependencies
+
 app = FastAPI()
 app.include_router(router)
 client = TestClient(app)
