@@ -1,20 +1,15 @@
 import pytest
 from fastapi.testclient import TestClient
-from fastapi import FastAPI
-from unittest.mock import MagicMock, patch
-from src.users.controller import router
+from unittest.mock import patch
+from main import app
 from src.auth.controller import require_admin
 
-# Setup test application
-app = FastAPI()
-app.include_router(router)
-client = TestClient(app)
 
-# Mock the require_admin dependency for admin-only routes
 async def override_require_admin():
     return {"id": 1, "name": "admin", "is_admin": True}
 
 app.dependency_overrides[require_admin] = override_require_admin
+client = TestClient(app)
 
 @pytest.fixture
 def mock_user_service():
