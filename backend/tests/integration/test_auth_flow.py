@@ -1,9 +1,8 @@
 import pytest
-from fastapi.testclient import TestClient
+from tests.integration.conftest import client
 from unittest.mock import MagicMock, patch
-from main import app
 
-client = TestClient(app)
+
 
 @pytest.fixture
 def mock_db():
