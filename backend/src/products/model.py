@@ -23,6 +23,26 @@ class ProductCreate(BaseModel):
     ram: Optional[int] = None      
     storage: Optional[int] = None
 
+class ProductPatch(BaseModel):
+    category: Optional[str] = None
+    brand: Optional[str] = None
+    model: Optional[str] = None
+    price: Optional[float] = None
+    stock: Optional[int] = None
+    description: Optional[str] = None
+    display_size: Optional[float] = None
+    battery_capacity: Optional[int] = None
+    camera_mp: Optional[int] = None
+    cpu: Optional[str] = None
+    gpu: Optional[str] = None
+    screen_size: Optional[float] = None
+    weight: Optional[float] = None
+    screen_type: Optional[str] = None
+    battery_life: Optional[int] = None
+    water_resistance: Optional[str] = None
+    ram: Optional[int] = None
+    storage: Optional[int] = None
+
 def product_filter_params(
     category: Optional[str] = Query(None),
     brand: Optional[List[str]] = Query(None, style="form", explode=True), 

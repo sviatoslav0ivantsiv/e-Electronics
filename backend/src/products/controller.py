@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from . import service
 from src.auth.controller import require_admin
-from .model import ProductCreate, product_filter_params
+from .model import ProductCreate, ProductPatch, product_filter_params
 from src.rate_limiting import limiter
 from fastapi import Request
 
@@ -20,6 +20,19 @@ def get_filters(request: Request, category: str | None = Query(None)):
         return service.get_filter_options(category)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/{product_id}")
+@limiter.limit("5/minute")
+def get_product(request: Request, product_id: int):
+    try:
+        product = service.get_by_id(product_id)
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return product
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("")
 @limiter.limit("5/minute")
@@ -27,6 +40,8 @@ def create_product(request: Request, product: ProductCreate, admin=Depends(requi
     try:
         service.save(product.model_dump())
         return {"message": "Product created"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
@@ -36,15 +51,19 @@ def update_product(request: Request, product_id: int, product: ProductCreate, ad
     try:
         service.update(product_id, product.model_dump(exclude_none=True))
         return {"message": "Product updated"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
 @router.patch("/{product_id}")
 @limiter.limit("5/minute")
-def patch_product(request: Request, product_id: int, product: ProductCreate, admin=Depends(require_admin)):
+def patch_product(request: Request, product_id: int, product: ProductPatch, admin=Depends(require_admin)):
     try:
         service.update(product_id, product.model_dump(exclude_unset=True))
         return {"message": "Product partially updated"}
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
