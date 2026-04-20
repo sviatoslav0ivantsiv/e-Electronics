@@ -63,6 +63,8 @@ class TestUsersService:
         assert users[0]["name"] == "alice"
         mock_cursor.execute.assert_called_with("SELECT id, name, is_admin, created_at FROM users")
         mock_conn.close.assert_called_once()
+        mock_cursor.close.assert_called_once()
+
 
     def test_toggle_admin_status(self, mock_db):
         """Tests toggling the is_admin boolean for a user."""
@@ -76,3 +78,37 @@ class TestUsersService:
         )
         mock_conn.commit.assert_called_once()
         mock_conn.close.assert_called_once()
+        mock_conn.close.assert_called_once()
+
+    def test_toggle_admin_user_not_found(self, mock_db):
+        """Tests that toggle_admin handles DB errors gracefully."""
+        mock_conn, mock_cursor = mock_db
+        mock_cursor.execute.side_effect = Exception("User not found")
+
+        with pytest.raises(Exception, match="User not found"):
+            toggle_admin(999)
+
+        mock_conn.close.assert_called_once()
+    
+    def test_get_all_users_db_failure(self, mock_db):
+        """Tests that get_all handles DB errors gracefully."""
+        mock_conn, mock_cursor = mock_db
+        mock_cursor.execute.side_effect = Exception("DB Error")
+
+        with pytest.raises(Exception, match="DB Error"):
+            get_all()
+
+        mock_conn.close.assert_called_once()
+
+    def test_register_password_is_hashed(self, mock_db):
+        """Tests that plaintext password is never passed to the DB."""
+        mock_conn, mock_cursor = mock_db
+        mock_cursor.fetchone.side_effect = [None, {"id": 1, "name": "bob", "is_admin": False, "created_at": "2023-01-01"}]
+
+        with patch("src.users.service.pwd_context.hash") as mock_hash:
+            mock_hash.return_value = "hashed_secret"
+            register("bob", "plaintext")
+
+        # verify the raw password was never passed to execute
+        for call in mock_cursor.execute.call_args_list:
+            assert "plaintext" not in str(call)

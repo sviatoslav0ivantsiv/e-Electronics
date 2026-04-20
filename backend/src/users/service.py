@@ -30,19 +30,31 @@ def register(name: str, password: str):
     }
 
 def get_all():
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id, name, is_admin, created_at FROM users")
-    users = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return users
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, is_admin, created_at FROM users")
+        users = cursor.fetchall()
+        cursor.close()
+        return users
+    except Exception:
+        raise
+    finally:
+        if conn:
+            conn.close()
 
 def toggle_admin(user_id: int):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE users SET is_admin = NOT is_admin WHERE id = %s", (user_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return {"message": "Admin status updated"}
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET is_admin = NOT is_admin WHERE id = %s", (user_id,))
+        conn.commit()
+        cursor.close()
+        return {"message": "Admin status updated"}
+    except Exception:
+        raise
+    finally:
+        if conn:
+            conn.close()
