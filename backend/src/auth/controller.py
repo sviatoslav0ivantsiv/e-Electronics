@@ -33,5 +33,7 @@ def login(request: Request, user: UserCredentials):
             "message": "Login successful",
             "token": token
         }
+    except HTTPException:
+        raise  
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
