@@ -3,16 +3,15 @@ from fastapi.testclient import TestClient
 from fastapi import FastAPI
 from unittest.mock import MagicMock, patch
 from jose import JWTError
+from main import app
 from src.auth.controller import router, require_admin
 
 
-app = FastAPI()
-app.include_router(router)
 client = TestClient(app)
 
 @pytest.fixture
 def mock_auth_service():
-    with patch("src.auth.service.login") as mock:
+    with patch("src.auth.controller.service.login") as mock:
         yield mock
 
 @pytest.fixture
