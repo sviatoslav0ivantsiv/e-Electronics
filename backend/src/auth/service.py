@@ -19,14 +19,20 @@ def create_token(user: dict):
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 def login(name: str, password: str):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
-    user = cursor.fetchone()
-    cursor.close()
-    conn.close()
-
-    if not user or not pwd_context.verify(password, user["password"]):
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
+        user = cursor.fetchone()
+        if not user:
+            return None
+        if not pwd_context.verify(password, user["password"]):
+            return None
+        token = create_token(user)
+        return token
+    except Exception:
         return None
-    
-    return create_token(user)
+    finally:
+        if conn:
+            conn.close()

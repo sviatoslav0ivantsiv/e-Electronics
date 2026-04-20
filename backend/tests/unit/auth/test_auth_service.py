@@ -6,7 +6,7 @@ from src.auth.service import create_token, login, SECRET_KEY, ALGORITHM
 def test_create_token_contains_correct_payload():
     """Tests that the generated JWT contains the expected user data."""
     user = {"id": 1, "name": "alice", "is_admin": True}
-    # We use a dummy key if the environment hasn't provided one for tests
+   
     test_key = SECRET_KEY or "test_secret"
     test_algo = ALGORITHM or "HS256"
     
@@ -78,3 +78,23 @@ def test_login_invalid_password(mock_verify, mock_get_conn):
     token = login("alice", "wrong_password")
     
     assert token is None
+    mock_conn.close.assert_called_once()
+
+@patch("src.auth.service.get_connection")
+def test_login_db_connection_failure(mock_get_conn):
+    """Tests that login handles DB connection errors gracefully."""
+    mock_get_conn.side_effect = Exception("DB unreachable")
+        
+    token = login("alice", "password")
+        
+    assert token is None
+    mock_get_conn.assert_called_once()
+
+
+def test_create_token_raises_without_secret_key():
+    """Tests that create_token fails loudly if SECRET_KEY is missing."""
+    user = {"id": 1, "name": "alice", "is_admin": False}
+    
+    with patch("src.auth.service.SECRET_KEY", None):
+        with pytest.raises(Exception):
+            create_token(user)
