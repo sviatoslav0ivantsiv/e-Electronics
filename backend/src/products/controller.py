@@ -9,8 +9,7 @@ from fastapi import Request
 router = APIRouter(prefix="/api/products", tags=["Products"])
 
 @router.get("")
-@limiter.limit("5/minute")
-def list_products(request: Request, filters: dict = Depends(product_filter_params)):
+def list_products(filters: dict = Depends(product_filter_params)):
     return service.get_products(filters)
 
 @router.get("/filters")
