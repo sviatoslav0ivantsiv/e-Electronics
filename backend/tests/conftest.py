@@ -17,3 +17,8 @@ def mock_cursor():
 @pytest.fixture
 def fake_user():
     return {"id": 1, "email": "alice@example.com", "role": "user"}
+
+@pytest.fixture(autouse=True)
+def disable_rate_limiter():
+    yield
+    app.state.limiter._storage.reset()
