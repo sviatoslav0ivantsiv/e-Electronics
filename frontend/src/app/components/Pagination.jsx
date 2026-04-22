@@ -18,7 +18,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
     if (clickedButton === pageOrName || currentPage === pageOrName) {
       return "px-3 py-1 rounded-[8px] bg-black text-white";
     }
-    return "px-3 py-1 rounded-[8px] bg-[#E6E6E6]";
+    return "px-3 py-1 rounded-[8px] bg-[#E6E6E6] text-gray-600 border-none hover:border-gray-500";
   };
 
   return (

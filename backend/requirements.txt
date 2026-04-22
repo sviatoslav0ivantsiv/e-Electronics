@@ -18,3 +18,11 @@ uvicorn==0.41.0
 
 watchfiles==1.1.1
 websockets==16.0
+
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
+slowapi==0.1.9
+pytest
+pytest-mock
+httpx

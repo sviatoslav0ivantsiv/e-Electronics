@@ -1,0 +1,60 @@
+from passlib.context import CryptContext
+from src.database.core import get_connection
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def register(name: str, password: str):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
+    if cursor.fetchone():
+        cursor.close()
+        conn.close()
+        raise ValueError("User already exists")
+
+    hashed = pwd_context.hash(password)
+
+    cursor.execute("INSERT INTO users (name, password) VALUES (%s, %s)", (name, hashed))
+    conn.commit()
+
+    new_id = cursor.lastrowid
+    cursor.execute("SELECT id, name, is_admin, created_at FROM users WHERE id = %s", (new_id,))
+    new_user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+    return {
+        "message": "User registered successfully",
+        "user": new_user
+    }
+
+def get_all():
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, name, is_admin, created_at FROM users")
+        users = cursor.fetchall()
+        cursor.close()
+        return users
+    except Exception:
+        raise
+    finally:
+        if conn:
+            conn.close()
+
+def toggle_admin(user_id: int):
+    conn = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users SET is_admin = NOT is_admin WHERE id = %s", (user_id,))
+        conn.commit()
+        cursor.close()
+        return {"message": "Admin status updated"}
+    except Exception:
+        raise
+    finally:
+        if conn:
+            conn.close()

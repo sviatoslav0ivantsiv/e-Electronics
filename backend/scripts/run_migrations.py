@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from db import get_connection
+from src.database.core import get_connection
 import mysql.connector
 
 MIGRATIONS_DIR = Path(__file__).parent / "migrations"
@@ -15,7 +15,7 @@ def applied_migrations(conn):
                 applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
-    except Exception as e:
+    except Exception:
         # Ignore if table already exists
         pass
 

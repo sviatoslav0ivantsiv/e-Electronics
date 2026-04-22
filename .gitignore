@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+.idea/
+
 # dependencies
 /node_modules
 /.pnp
@@ -67,6 +69,7 @@ __pycache__/
 *.so
 __pycache__/
 *.pyc
+backend/*.pyс
 
 # Virtual env
 env/
