@@ -7,54 +7,37 @@ def get_products(filters: dict):
     sql = ""
     params = []
     
-    if filters.get("category"):
-        sql += " AND category = %s"
-        params.append(filters["category"])
-    if filters.get("min_price"):
-        sql += " AND price >= %s"
-        params.append(filters["min_price"])
-    if filters.get("max_price"):
-        sql += " AND price <= %s"
-        params.append(filters["max_price"])
-    if filters.get("model"):
-        sql += " AND model LIKE %s"
-        params.append(f"%{filters['model']}%")
-    if filters.get("min_display_size"):
-        sql += " AND display_size >= %s"
-        params.append(filters["min_display_size"])
-    if filters.get("max_display_size"):
-        sql += " AND display_size <= %s"
-        params.append(filters["max_display_size"])
-    if filters.get("min_battery_capacity"):
-        sql += " AND battery_capacity >= %s"
-        params.append(filters["min_battery_capacity"])
-    if filters.get("max_battery_capacity"):
-        sql += " AND battery_capacity <= %s"
-        params.append(filters["max_battery_capacity"])
-    if filters.get("min_screen_size"):
-        sql += " AND screen_size >= %s"
-        params.append(filters["min_screen_size"])
-    if filters.get("max_screen_size"):
-        sql += " AND screen_size <= %s"
-        params.append(filters["max_screen_size"])
-    if filters.get("min_weight"):
-        sql += " AND weight >= %s"
-        params.append(filters["min_weight"])
-    if filters.get("max_weight"):
-        sql += " AND weight <= %s"
-        params.append(filters["max_weight"])
-    if filters.get("min_battery_life"):
-        sql += " AND battery_life >= %s"
-        params.append(filters["min_battery_life"])
-    if filters.get("max_battery_life"):
-        sql += " AND battery_life <= %s"
-        params.append(filters["max_battery_life"])
+
+    LIKE = "LIKE"
+
+    single_filters = [
+        ("category", "category", "="),
+        ("min_price", "price", ">="),
+        ("max_price", "price", "<="),
+        ("model", "model", LIKE),
+        ("min_display_size", "display_size", ">="),
+        ("max_display_size", "display_size", "<="),
+        ("min_battery_capacity", "battery_capacity", ">="),
+        ("max_battery_capacity", "battery_capacity", "<="),
+        ("min_screen_size", "screen_size", ">="),
+        ("max_screen_size", "screen_size", "<="),
+        ("min_weight", "weight", ">="),
+        ("max_weight", "weight", "<="),
+        ("min_battery_life", "battery_life", ">="),
+        ("max_battery_life", "battery_life", "<="),
+    ]
+
+    for filter_key, field, operator in single_filters:
+        val = filters.get(filter_key)
+        if val is not None:
+            sql += f" AND {field} {operator} %s"
+            params.append(f"%{val}%" if operator is LIKE else val)
     
     list_filters = ["brand", "camera_mp", "cpu", "gpu", "screen_type", "water_resistance", "ram", "storage"]
 
     for field in list_filters:
         val = filters.get(field)
-        if val:
+        if val is not None:
             items = val if isinstance(val, list) else [val]
             placeholders = ', '.join(['%s'] * len(items))
             sql += f" AND {field} IN ({placeholders})"
