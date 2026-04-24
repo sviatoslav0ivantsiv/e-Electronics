@@ -1,12 +1,12 @@
 import { users } from "../route";
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const user = users.find(user => user.id === parseInt(id));
     return Response.json(user);    
 }
 
-export async function PUT(_request: Request, { params }: { params: { id: string } }) {
+export async function PUT(_request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const userIndex = users.findIndex(user => user.id === parseInt(id));
     if (userIndex === -1) {
@@ -18,7 +18,7 @@ export async function PUT(_request: Request, { params }: { params: { id: string 
     
 }
 
-export async function PATCH(_request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(_request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const userIndex = users.findIndex(user => user.id === parseInt(id));
     if (userIndex === -1) {
@@ -30,7 +30,7 @@ export async function PATCH(_request: Request, { params }: { params: { id: strin
 }
     
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const userIndex = users.findIndex(user => user.id === parseInt(id));
     if (userIndex === -1) {
