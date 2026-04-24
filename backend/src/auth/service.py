@@ -25,14 +25,20 @@ def login(name: str, password: str):
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
         user = cursor.fetchone()
+
+        print("INPUT:", password)
+        print("HASH:", user["password"])
+        print("VERIFY:", pwd_context.verify(password, user["password"]))
+
         if not user:
             return None
         if not pwd_context.verify(password, user["password"]):
             return None
         token = create_token(user)
         return token
-    except Exception:
-        return None
+    except Exception as e:
+        print("Error during login:", e)
+        raise
     finally:
         if conn:
             conn.close()
