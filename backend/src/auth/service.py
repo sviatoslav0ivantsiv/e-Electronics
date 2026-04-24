@@ -25,11 +25,6 @@ def login(name: str, password: str):
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
         user = cursor.fetchone()
-
-        print("INPUT:", password)
-        print("HASH:", user["password"])
-        print("VERIFY:", pwd_context.verify(password, user["password"]))
-
         if not user:
             return None
         if not pwd_context.verify(password, user["password"]):
