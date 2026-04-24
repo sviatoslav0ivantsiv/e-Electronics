@@ -14,7 +14,7 @@ export default function RegisterPage() {
 
   async function handleRegister() {
     setError("");
-    const res = await fetch(`${BASE_URL}/auth/login`, {
+    const res = await fetch(`${BASE_URL}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, password }),
